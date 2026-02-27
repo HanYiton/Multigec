@@ -1,0 +1,26 @@
+target_language: en
+source_corpus: Write & Improve Corpus 2024
+learner_type: L2
+short_description: English learner essays submitted to the Write & Improve essay practice platform, annotated with grammatical errors, 5050 essays in total.
+links:
+  - https://doi.org/10.17863/CAM.112997
+  - https://englishlanguageitutoring.com/datasets/write-and-improve-corpus-2024
+contact: diane.nicholls@cambridge.org
+availability: restricted
+license: 
+  name: Cambridge University Press & Assessment licence
+  url: https://englishlanguageitutoring.com/datasets/write-and-improve-corpus-2024
+sentence_aligned: false
+original_essays:
+  n_essays: 
+    total: 5050
+    train: 4040
+    dev: 506
+    test: 504
+reference_essays_1:
+  correction_style: minimal
+  n_essays: 
+    total: 5050
+    train: 4040
+    dev: 506
+    test: 504

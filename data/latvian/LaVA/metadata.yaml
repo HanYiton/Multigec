@@ -1,0 +1,32 @@
+target_language: lv
+source_corpus: LaVA
+learner_type: L2
+short_description: |
+  The corpus includes 1015 texts (190k tokens and 790k characters excluding whitespaces) 
+  created by foreign Latvian language learners studying at Latvian higher education institutions 
+  for the first or second semester reaching the A1 (possibly A2) Latvian language proficiency level.
+  Some personal information is censored, replacing the word with asterisk \(\*\).
+links: 
+  - https://lava.korpuss.lv/en/
+  - https://korpuss.lv/id/LaVA
+  - http://hdl.handle.net/20.500.12574/42
+  - https://aclanthology.org/2020.lrec-1.49.pdf
+contact: roberts.dargis@lumii.lv
+availability: open
+license: 
+  name: CC BY 4.0
+  url: https://creativecommons.org/licenses/by/4.0/deed.en
+sentence_aligned: false
+original_essays: 
+  n_essays: 
+    total: 1015
+    train: 813
+    dev: 101
+    test: 101
+reference_essays_1:
+  correction_style: minimal
+  n_essays: 
+    total: 1015
+    train: 813
+    dev: 101
+    test: 101

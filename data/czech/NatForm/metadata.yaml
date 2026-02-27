@@ -1,0 +1,33 @@
+target_language: cs
+source_corpus: GECCC – Grammar Error Correction Corpus for Czech / Native Formal
+learner_type: L1 
+short_description: essays written by students and pupils, all native speakers of Czech
+links: 
+  - https://doi.org/10.1162/tacl_a_00470 # paper
+  - http://hdl.handle.net/11234/1-4861 # data sheet
+contact: alexandr.rosen@ff.cuni.cz 
+availability: open 
+license: 
+  name: Creative Commons - Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+  url: https://creativecommons.org/licenses/by-sa/4.0/
+sentence_aligned: true 
+original_essays: 
+  n_essays: 
+    total: 391
+    train: 227
+    dev: 88
+    test: 76
+reference_essays_1: 
+  correction_style: minimal
+  n_essays: 
+    total: 391
+    train: 227
+    dev: 88
+    test: 76
+reference_essays_2: 
+  correction_style: minimal
+  n_essays: 
+    total: 121
+    train: 0
+    dev: 47
+    test: 74

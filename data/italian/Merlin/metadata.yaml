@@ -1,0 +1,31 @@
+target_language: it
+source_corpus: Merlin v1.1
+learner_type: L2
+short_description: 'Essays written by learners of Italian as a second language, manually annnotated with target hypotheses. Collected by the EU-funded project  MERLIN "Multilingual Platform for the European Reference Levels: Interlanguage Exploration in Context" (2012–2014).'
+links:
+  - http://hdl.handle.net/20.500.12124/6
+  - https://www.merlin-platform.eu/
+  - https://aclanthology.org/L14-1488/
+  - https://conference.pixel-online.net/conferences/ICT4LL2013/common/download/Paper_pdf/322-CEF03-FP-Wisniewski-ICT2013.pdf
+  - https://clarin.eurac.edu/repository/xmlui/bitstream/handle/20.500.12124/6/merlin-docs-v1.1.zip?sequence=2&isAllowed=y
+  - https://clarin.eurac.edu/repository/xmlui/bitstream/handle/20.500.12124/6/merlin-metadata-v1.1.zip?sequence=4&isAllowed=y
+contact: corpman@eurac.edu
+availability: open
+license:
+  name: CC BY-SA 4.0
+  url: https://creativecommons.org/licenses/by-sa/4.0/
+sentence_aligned: false
+original_essays:
+  n_essays: 
+    total: 813
+    train: 651
+    dev: 81
+    test: 81
+reference_essays_1:
+  correction_style: minimal
+  n_essays: 
+    total: 813
+    train: 651
+    dev: 81
+    test: 81
+

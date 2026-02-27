@@ -1,0 +1,28 @@
+target_language: sv
+source_corpus: SweLL-gold
+learner_type: L2
+short_description: Essays written by adult learners of Swedish as a second language, manually pseudonymized and correction annotated. Collection period 2017-2020
+links:
+  - https://nejlt.ep.liu.se/article/view/1374 # paper
+  - https://spraakbanken.github.io/swell-release-v1/Metadata-SweLL # data sheet or similar 
+  - https://gupea.ub.gu.se/handle/2077/69432 # normalization and annotation guidelines
+  - ...
+contact: arianna.masciolini@gu.se
+availability: restricted
+license: 
+  name: CLARIN-ID, -PRIV, -NORED, -BY
+  url: https://www.kielipankki.fi/support/clarin-eula/
+sentence_aligned: false
+original_essays:
+  n_essays: 
+    total: 502
+    train: 402
+    dev: 50
+    test: 50
+reference_essays_1:
+  correction_style: minimal
+  n_essays: 
+    total: 502
+    train: 402
+    dev: 50
+    test: 50

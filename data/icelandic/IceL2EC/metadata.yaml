@@ -1,0 +1,27 @@
+target_language: is
+source_corpus: The Icelandic L2 Error Corpus (IceL2EC)
+learner_type: L2
+short_description: Collection of texts in modern Icelandic, written by adult learners of Icelandic as a second language, annotated for mistakes related to spelling, grammar, and other issues marked according to error type using an annotation scheme of 258 error codes. Collection period 2020-2021.
+links: 
+  - https://linguist.is/wp-content/uploads/2022/10/glisic2022nature.pdf #paper1
+  - https://aclanthology.org/2022.icon-main.30.pdf #paper2
+  - http://hdl.handle.net/20.500.12537/280 #data
+contact: isidora@hi.is
+availability: open
+license: 
+  name: CC BY 4.0
+  url: https://creativecommons.org/licenses/by/4.0/deed.en
+sentence_aligned: true
+original_essays:
+  n_essays: 
+    total: 193
+    train: 155
+    dev: 19
+    test: 19
+reference_essays_1:
+  correction_style: fluency
+  n_essays: 
+    total: 193
+    train: 155
+    dev: 19
+    test: 19

@@ -1,0 +1,54 @@
+target_language: uk
+source_corpus: UA-GEC
+learner_type: mixed
+short_description: |
+  Texts written by a diverse set of contributors (learners and not). Corrected
+  versions were annotated by professional linguists: two annotators per text in
+  the dev and test sets, and one per text in the training set. Contains both
+  minimal (GEC only) and fluency edits. Collection period: 2020-2021. 
+links:
+  - https://aclanthology.org/2023.unlp-1.12/ # paper
+  - https://github.com/grammarly/ua-gec # data
+contact: 
+  - oleksiy.syvokon@gmail.com
+  - mariana.scorp@gmail.com
+availability: open
+license: 
+  name: CC BY 4.0
+  url: https://creativecommons.org/licenses/by/4.0/deed.en
+sentence_aligned: true # indicate "True" if sentence alignments are available. For the time being, you do NOT need to upload a sentence-aligned version of the corpus
+original_essays:
+  n_essays: 
+    total: 1872
+    train: 1706
+    dev: 87
+    test: 79
+reference_essays_1:
+  correction_style: minimal
+  n_essays:
+    dev: 87
+    test: 79
+    total: 1872
+    train: 1706
+reference_essays_2:
+  correction_style: minimal
+  n_essays:
+    dev: 87
+    test: 79
+    total: 166
+    train: 0
+reference_essays_3:
+  correction_style: fluency
+  n_essays:
+    dev: 87
+    test: 79
+    total: 1872
+    train: 1706
+reference_essays_4:
+  correction_style: fluency
+  n_essays:
+    dev: 87
+    test: 79
+    total: 166
+    train: 0
+

@@ -1,0 +1,25 @@
+target_language: el
+source_corpus: GLCII
+learner_type: L2
+short_description: Essays written by adult learners of Greek as a second/foreign language, manually pseudonymized and correction annotated. Collection period 2019-2023
+links:
+  - https://ejournals.lib.auth.gr/jal/article/view/9915/9187 # paper
+contact: alextantos@lit.auth.gr, ktsiotsk@lit.auth.gr
+availability: open
+license: 
+  name: CC BY-NC-SA 4.0
+  url: https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1
+sentence_aligned: false
+original_essays:
+  n_essays: 
+    total: 1289
+    train: 1031
+    dev: 129
+    test: 129
+reference_essays_1:
+  correction_style: minimal
+  n_essays: 
+    total: 1289
+    train: 1031
+    dev: 129
+    test: 129

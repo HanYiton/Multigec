@@ -1,0 +1,1 @@
+To obtain the RULEC-GEC data, please go to [github.com/arozovskaya/RULEC-GEC](https://github.com/arozovskaya/RULEC-GEC) to fill  out the User Agreement for the RULEC corpus and email it to arozovskaya@qc.cuny.edu.
