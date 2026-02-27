@@ -35,8 +35,9 @@ wandb/
 swanlab/
 tensorboard/
 # 数据文件（大样本/数据集）
-data/
+/data/
 datasets/
+processed_data/
 # 推理/训练临时文件
 *.tmp
 *.lock
