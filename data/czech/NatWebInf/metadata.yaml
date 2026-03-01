@@ -1,0 +1,33 @@
+target_language: cs
+source_corpus: GECCC – Grammar Error Correction Corpus for Czech / Native Web Informal
+learner_type: L1 
+short_description: informal texts from the web, written by native speakers of Czech
+links: 
+  - https://doi.org/10.1162/tacl_a_00470 # paper
+  - http://hdl.handle.net/11234/1-4861 # data sheet
+contact: alexandr.rosen@ff.cuni.cz 
+availability: open 
+license: 
+  name: Creative Commons - Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+  url: https://creativecommons.org/licenses/by-sa/4.0/
+sentence_aligned: true 
+original_essays: 
+  n_essays: 
+    total: 6167
+    train: 3620
+    dev: 1291
+    test: 1256
+reference_essays_1: 
+  correction_style: minimal
+  n_essays: 
+    total: 6167
+    train: 3620
+    dev: 1291
+    test: 1256
+reference_essays_2: 
+  correction_style: minimal
+  n_essays: 
+    total: 1903
+    train: 0
+    dev: 687
+    test: 1216

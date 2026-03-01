@@ -1,0 +1,42 @@
+target_language: et
+source_corpus: Estonian Interlanguage Corpus (EIC)
+learner_type: L2
+short_description: This error-annotated subcorpus includes narrative/descriptive and argumentative writings, informal and formal letters representing the proficiency levels A2–C1. The texts are annotated in the M2 format, each sentence can have up to 3 annotation versions. This material has been used to develop and test Estonian autocorrection tools. Here, it is split into a train, dev and test set because other Estonian MultiGEC resources do not contain C1-level writings.
+links:
+  - https://dh.org.ee/wp-content/uploads/sites/3/2022/10/Allkivi_Metsoja_et_al_slides_DH2022.pdf # presentation about the error-annotated subcorpus at the 8th Estonian Digital Humanities Conference (October 5-7, 2022, Tallinn)
+  - https://drive.google.com/file/d/102XcC9BwqHMo6y3i7wPik_2JNo0wxDTP/view # poster presentation about the user interface of EIC at the Baltic Digital Humanities Forum (April 25-26, 2024, Riga)
+  - https://github.com/tlu-dt-nlp/EstGEC-L2-Corpus # Github repository
+  - https://elle.tlu.ee/tools/ # EIC corpus query: a tool for browsing error annotations will soon become available)
+contact: elle@tlu.ee
+availability: open
+license: 
+  name: CC BY 4.0
+  url: https://creativecommons.org/licenses/by/4.0/
+sentence_aligned: true
+original_essays:
+  n_essays: 
+    total: 258
+    train: 206
+    dev: 26
+    test: 26
+reference_essays_1:
+  correction_style: minimal #mostly, the first correction has been minimal
+  n_essays: 
+    total: 258
+    train: 206
+    dev: 26
+    test: 26
+reference_essays_2:
+  correction_style: fluency #mostly, additional corrections have made more changes to the sentence structure; if a sentence only had one error-annotation, ref2 includes the same correction as ref1
+  n_essays: 
+    total: 258
+    train: 206
+    dev: 26
+    test: 26
+reference_essays_3:
+  correction_style: fluency #mostly, additional corrections have made more changes to the sentence structure; if a sentence only had two error-annotations, ref3 includes the same correction as ref1
+  n_essays: 
+    total: 258
+    train: 206
+    dev: 26
+    test: 26

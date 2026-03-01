@@ -1,0 +1,12 @@
+torch>=2.1.0
+transformers>=4.40.0
+peft>=0.10.0
+datasets>=2.18.0
+accelerate>=0.28.0
+deepspeed>=0.14.0
+vllm>=0.4.0
+pandas>=2.0.0
+pyarrow>=14.0.0
+pyyaml>=6.0
+tqdm>=4.65.0
+wandb>=0.16.0

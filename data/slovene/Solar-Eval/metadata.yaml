@@ -1,0 +1,27 @@
+target_language: sl
+source_corpus: Šolar-Eval
+learner_type: L1
+short_description: The data is from Šolar-Eval, a specialised subcorpus of the Slovene developmental corpus Šolar, designed for the evaluation of Slovene spell- and grammar-checking. Šolar-Eval encompasses 109 essays authored by Slovene primary and secondary school students, featuring 9,808 annotated language corrections.
+links:
+  - https://www.clarin.si/repository/xmlui/handle/11356/1902
+  - https://www.cjvt.si/prop/en/ 
+  - https://doi.org/10.4312/jis.68.4.89-108
+contact: ales.zagar@fri.uni-lj.si
+availability: open
+license:
+  name: Creative Commons - Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+  url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+sentence_aligned: true
+original_essays:
+  n_essays: 
+    total: 109
+    train: 10
+    dev: 50
+    test: 49
+reference_essays_1:
+  correction_style: minimal
+  n_essays: 
+    total: 109
+    train: 10
+    dev: 50
+    test: 49

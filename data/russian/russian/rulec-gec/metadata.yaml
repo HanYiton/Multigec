@@ -1,0 +1,49 @@
+target_language: ru
+source_corpus: RULEC-GEC
+learner_type: mixed (L2 and Heritage speakers); HL stands for heritage; FL stands for L2
+short_description: RULEC-GEC contains data from essays written by L2 learners of Russian and Russian heritage speakers studying at the University of Oregon. The essay corpus is referred to as "RULEC", and the annotated subset that is distributed is referred to as RULEC-GEC. The annotated data includes "text snippets", i.e. consecutive sentences extracted and corrected from a subset of essays. Note that the majority of text snippets do not include an entire essay, but only a subset of sentences that appear consecutively in an essay. Sentences that do not appear consecutively in the original essay are represented by separate snippets in the data.
+links: 
+  - https://www.jstor.org/stable/43669807 # paper on RULEC corpus ("A. Alsufieva, O. Kisselev, and S. Freels. 2012. Results 2012: Using flagship data to develop a russian learner corpus of academic writing. Russian Language Journal, 62:79–105")
+  - https://aclanthology.org/Q19-1001.pdf # paper on RULEC-GEC annotation ("A. Rozovskaya and D. Roth, 2019. Grammar error correction in morphologically-rich languages: The case of russian. In Transactions of ACL")
+  - https://aclanthology.org/2024.eacl-long.76.pdf # paper on additional referencess for RULEC-GEC ("F. Palma Gomez and A. Rozovskaya. 2024. Multi-Reference Benchmarks for Russian Grammatical Error Correction. In EACL")
+  -  https://github.com/arozovskaya/RULEC-GEC # RULEC-GEC README 
+
+contact: arozovskaya@qc.cuny.edu # contact information
+availability: restricted # use "open" if the subcorpus is free to use outside of the shared task, restricted otherwise. Note that this refers to the MultiGEC subcorpus, not to the source corpus
+license: 
+  name: Creative Commons Attribution-ShareAlike 4.0 International License
+  url: https://creativecommons.org/licenses/by-sa/4.0/ and https://github.com/arozovskaya/RULEC-GEC/blob/master/RULEC%20User%20Agreement.pdf
+sentence_aligned: true 
+original_essays: # stats in reference to the *-orig-*.md files
+  n_essays: 
+    total: 6043
+    train: 2539
+    dev: 1969
+    test: 1535
+reference_essays_1: # stats in reference to the *-refX-*.md files
+  correction_style: minimal
+  n_essays: 
+    total: 6043
+    train: 2539
+    dev: 1969
+    test: 1535
+# if available, add sections for additional references, named reference_essays_2, reference_essays_3 etc. (these may have less essays, such as in the case of the Ukrainian corpus)
+
+reference_essays_2: # stats in reference to the *-refX-*.md files
+  correction_style: fluency
+  n_essays: 
+    total: 1535
+    train: 0
+    dev: 0
+    test: 1535
+
+reference_essays_3: # stats in reference to the *-refX-*.md files
+  correction_style: fluency
+  n_essays:
+    total: 1535
+    train: 0
+    dev: 0
+    test: 1535
+
+
+

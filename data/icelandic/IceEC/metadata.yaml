@@ -1,0 +1,27 @@
+target_language: is
+source_corpus: The Icelandic Error Corpus (IceEC)
+learner_type: L1
+short_description: Collection of texts in modern Icelandic annotated for mistakes related to spelling, grammar, and other issues. The subcorpus in the MultiGEC2025 shared task includes highschool student essays. Sentences within texts in the student essays had to be shuffled due to the license which they were originally published under. Collection period 2019-2020.
+links: 
+  - https://linguist.is/wp-content/uploads/2021/09/arnardottir2021creating.pdf #paper1
+  - https://aclanthology.org/2022.lrec-1.496/ #paper2
+  - https://repository.clarin.is/repository/xmlui/handle/20.500.12537/105 #data
+contact: isidora@hi.is
+availability: open
+license: 
+  name: CC BY 4.0
+  url: https://creativecommons.org/licenses/by/4.0/deed.en
+sentence_aligned: true
+original_essays:
+  n_essays: 
+    total: 176
+    train: 140
+    dev: 18
+    test: 18
+reference_essays_1:
+  correction_style: fluency
+  n_essays: 
+    total: 176
+    train: 140
+    dev: 18
+    test: 18
