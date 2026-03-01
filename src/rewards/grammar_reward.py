@@ -1,17 +1,115 @@
 """
 Grammar correction reward functions for verl GRPO training.
 
-Reward signals:
-1. Exact match: full score if output matches reference exactly
-2. Character-level edit distance ratio: partial credit based on similarity
-3. Length penalty: penalize outputs that are too short or too long
-4. Copy penalty: penalize outputs identical to the (erroneous) input
+Architecture:
+    R_total = gate(R_format) × (w_preserve × R_preserve + w_correct × R_correct)
+
+Sub-rewards:
+    R_format   — Hard gate: non-empty, valid length ratio, no instruction leakage.
+                 Fail → return -1.0 immediately.
+    R_preserve — edit_distance_similarity(pred, source): how much original text is kept.
+    R_correct  — chrF(pred, ref): character n-gram F-score for correction quality.
+                 Language-agnostic, robust to morphological variation.
+
+Scheduling:
+    Sigmoid-based weight interpolation that shifts from preservation-heavy (early)
+    to correction-heavy (late). Progress read from /dev/shm/multigec_progress.json.
+
+Per-language normalization:
+    Optional (off by default since GRPO already normalizes per-group).
 """
 
+import json
+import math
 import re
 import unicodedata
+from collections import defaultdict
 from typing import Optional
 
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+PROGRESS_FILE = "/dev/shm/multigec_progress.json"
+PROGRESS_REFRESH_INTERVAL = 100  # re-read file every N calls
+ENABLE_LANG_NORMALIZATION = False  # off: GRPO already normalizes per-group
+LANG_NORM_WARMUP = 30  # minimum samples before normalizing
+
+FORMAT_FAIL_SCORE = -1.0
+LENGTH_RATIO_BOUNDS = (0.3, 3.0)  # pred/source ratio must be within this range
+CHRF_MAX_N = 6
+CHRF_BETA = 1.0  # balanced precision/recall (avoids gaming recall by copying)
+
+
+# ---------------------------------------------------------------------------
+# Progress tracking (singleton cache)
+# ---------------------------------------------------------------------------
+
+_progress_cache = {"value": 0.0, "call_count": 0}
+
+
+def _read_progress() -> float:
+    """Read training progress from shared memory file. Returns p in [0, 1]."""
+    cache = _progress_cache
+    cache["call_count"] += 1
+
+    if cache["call_count"] % PROGRESS_REFRESH_INTERVAL != 0:
+        return cache["value"]
+
+    try:
+        with open(PROGRESS_FILE, "r") as f:
+            data = json.load(f)
+        step = data.get("step", 0)
+        total = data.get("total_steps", 1)
+        cache["value"] = min(1.0, max(0.0, step / max(total, 1)))
+    except (FileNotFoundError, json.JSONDecodeError, KeyError, OSError):
+        pass  # keep cached value (defaults to 0.0 = early-training weights)
+
+    return cache["value"]
+
+
+def _sigmoid(x: float) -> float:
+    """Numerically stable sigmoid."""
+    if x >= 0:
+        z = math.exp(-x)
+        return 1.0 / (1.0 + z)
+    else:
+        z = math.exp(x)
+        return z / (1.0 + z)
+
+
+# ---------------------------------------------------------------------------
+# Per-language normalization (optional, Welford's online algorithm)
+# ---------------------------------------------------------------------------
+
+_lang_stats: dict = defaultdict(lambda: {"mean": 0.0, "var": 1.0, "count": 0})
+
+
+def _update_lang_stats(lang: str, score: float) -> float:
+    """Update running stats and return normalized score if enabled."""
+    if not ENABLE_LANG_NORMALIZATION:
+        return score
+
+    stats = _lang_stats[lang]
+    stats["count"] += 1
+    n = stats["count"]
+
+    delta = score - stats["mean"]
+    stats["mean"] += delta / n
+    delta2 = score - stats["mean"]
+    stats["var"] += (delta * delta2 - stats["var"]) / n
+
+    if n < LANG_NORM_WARMUP:
+        return score
+
+    std = max(math.sqrt(max(stats["var"], 0.0)), 1e-6)
+    return (score - stats["mean"]) / std
+
+
+# ---------------------------------------------------------------------------
+# Text utilities
+# ---------------------------------------------------------------------------
 
 def normalize_text(text: str) -> str:
     """Normalize whitespace and Unicode for fair comparison."""
@@ -20,8 +118,47 @@ def normalize_text(text: str) -> str:
     return text
 
 
+# ---------------------------------------------------------------------------
+# R_format: hard gate
+# ---------------------------------------------------------------------------
+
+_INSTRUCTION_LEAK_RE = re.compile(
+    r"(?:please\s+)?correct\s+(?:all\s+)?(?:the\s+)?grammatical\s+errors?\s+"
+    r"in\s+the\s+following",
+    re.IGNORECASE,
+)
+
+
+def format_gate(pred: str, source: str) -> bool:
+    """
+    Hard format gate. Returns True if output is structurally acceptable.
+
+    Checks:
+      1. Non-empty after stripping whitespace
+      2. Length ratio vs source within bounds (catches degenerate outputs)
+      3. No instruction leakage (model echoed the prompt)
+    """
+    if not pred.strip():
+        return False
+
+    if source:
+        ratio = len(pred) / max(len(source), 1)
+        lo, hi = LENGTH_RATIO_BOUNDS
+        if ratio < lo or ratio > hi:
+            return False
+
+    if _INSTRUCTION_LEAK_RE.search(pred):
+        return False
+
+    return True
+
+
+# ---------------------------------------------------------------------------
+# R_preserve: edit-distance similarity to source
+# ---------------------------------------------------------------------------
+
 def char_edit_distance(s1: str, s2: str) -> int:
-    """Compute character-level Levenshtein distance (Wagner-Fischer)."""
+    """Compute character-level Levenshtein distance (Wagner-Fischer, space-optimized)."""
     if len(s1) > len(s2):
         s1, s2 = s2, s1
     prev = list(range(len(s1) + 1))
@@ -34,30 +171,104 @@ def char_edit_distance(s1: str, s2: str) -> int:
     return prev[-1]
 
 
-def edit_distance_similarity(pred: str, ref: str) -> float:
+def edit_distance_similarity(s1: str, s2: str) -> float:
     """Normalized similarity: 1 - (edit_distance / max_len). Returns [0, 1]."""
-    if not pred and not ref:
+    if not s1 and not s2:
         return 1.0
-    max_len = max(len(pred), len(ref))
+    max_len = max(len(s1), len(s2))
     if max_len == 0:
         return 1.0
-    dist = char_edit_distance(pred, ref)
-    return 1.0 - dist / max_len
+    return 1.0 - char_edit_distance(s1, s2) / max_len
 
 
-def length_ratio_penalty(pred: str, ref: str, tolerance: float = 0.3) -> float:
+# ---------------------------------------------------------------------------
+# R_correct: chrF (character n-gram F-score)
+# ---------------------------------------------------------------------------
+
+def _char_ngrams(text: str, n: int) -> dict:
+    """Extract character n-gram counts from text."""
+    ngrams: dict = {}
+    for i in range(len(text) - n + 1):
+        ng = text[i:i + n]
+        ngrams[ng] = ngrams.get(ng, 0) + 1
+    return ngrams
+
+
+def chrf_score(
+    pred: str,
+    ref: str,
+    max_n: int = CHRF_MAX_N,
+    beta: float = CHRF_BETA,
+) -> float:
     """
-    Penalize if predicted length deviates too much from reference length.
-    Returns 1.0 if within tolerance, decays linearly otherwise.
-    """
-    if not ref:
-        return 1.0
-    ratio = len(pred) / max(len(ref), 1)
-    if 1.0 - tolerance <= ratio <= 1.0 + tolerance:
-        return 1.0
-    deviation = abs(ratio - 1.0) - tolerance
-    return max(0.0, 1.0 - deviation)
+    Compute chrF score (character n-gram F-score).
 
+    Character n-grams from 1 to max_n. Beta controls precision/recall balance:
+      beta=1: balanced F1 (used here — avoids gaming recall by copying)
+      beta=2: recall-weighted (standard chrF)
+    """
+    if not pred and not ref:
+        return 1.0
+    if not pred or not ref:
+        return 0.0
+
+    total_p = 0.0
+    total_r = 0.0
+    count = 0
+
+    for n in range(1, max_n + 1):
+        pred_ng = _char_ngrams(pred, n)
+        ref_ng = _char_ngrams(ref, n)
+
+        if not pred_ng or not ref_ng:
+            continue
+
+        # Clipped matches (count each n-gram up to its reference frequency)
+        matches = sum(min(pred_ng.get(ng, 0), c) for ng, c in ref_ng.items())
+
+        pred_total = sum(pred_ng.values())
+        ref_total = sum(ref_ng.values())
+
+        total_p += matches / pred_total if pred_total else 0.0
+        total_r += matches / ref_total if ref_total else 0.0
+        count += 1
+
+    if count == 0:
+        return 0.0
+
+    avg_p = total_p / count
+    avg_r = total_r / count
+
+    if avg_p + avg_r < 1e-12:
+        return 0.0
+
+    beta_sq = beta * beta
+    return (1 + beta_sq) * avg_p * avg_r / (beta_sq * avg_p + avg_r)
+
+
+# ---------------------------------------------------------------------------
+# Scheduling weights
+# ---------------------------------------------------------------------------
+
+def compute_weights(progress: float) -> tuple:
+    """
+    Sigmoid-smoothed weight schedule.
+
+    Early training (p≈0): w_preserve ≈ 0.50, w_correct ≈ 0.50
+    Late training  (p≈1): w_preserve ≈ 0.25, w_correct ≈ 0.75
+
+    The shift is smooth (sigmoid) to avoid abrupt reward landscape changes.
+    Weights always sum to 1.0.
+    """
+    s = _sigmoid(8.0 * (progress - 0.5))
+    w_preserve = 0.5 - 0.25 * s
+    w_correct = 0.5 + 0.25 * s
+    return w_preserve, w_correct
+
+
+# ---------------------------------------------------------------------------
+# Main entry point (verl custom reward interface)
+# ---------------------------------------------------------------------------
 
 def compute_score(
     data_source: str,
@@ -67,6 +278,9 @@ def compute_score(
 ) -> float:
     """
     Compute reward score for grammar correction.
+
+    Architecture:
+        R = gate(R_format) × (w_preserve × R_preserve + w_correct × R_correct)
 
     Compatible with verl's custom reward function interface.
 
@@ -78,34 +292,60 @@ def compute_score(
                     "lang", "corpus"
 
     Returns:
-        float: reward score in [0, 1]
+        float: reward score. -1.0 for format failures, otherwise in [0, 1].
     """
     pred = normalize_text(solution_str)
     ref = normalize_text(ground_truth)
 
-    # Empty output → 0
-    if not pred:
-        return 0.0
+    source = ""
+    if extra_info and "source" in extra_info:
+        source = normalize_text(extra_info["source"])
 
-    # Exact match → full score
+    # --- Hard gate ---
+    if not format_gate(pred, source):
+        return FORMAT_FAIL_SCORE
+
+    # --- Exact match shortcut ---
     if pred == ref:
         return 1.0
 
-    # Base similarity from edit distance
-    sim = edit_distance_similarity(pred, ref)
+    # --- Sub-rewards ---
+    r_preserve = edit_distance_similarity(pred, source) if source else 0.5
+    r_correct = chrf_score(pred, ref)
 
-    # Length penalty
-    len_pen = length_ratio_penalty(pred, ref)
+    # --- Scheduling ---
+    progress = _read_progress()
+    w_preserve, w_correct = compute_weights(progress)
 
-    # Copy penalty: if the model just copies the erroneous input, reduce reward
-    copy_penalty = 1.0
-    if extra_info and "source" in extra_info:
-        source = normalize_text(extra_info["source"])
-        if source and pred == source and pred != ref:
-            # Model copied the input unchanged when it should have corrected
-            copy_penalty = 0.3
+    # --- Weighted combination ---
+    score = w_preserve * r_preserve + w_correct * r_correct
 
-    score = sim * len_pen * copy_penalty
+    # --- Optional per-language normalization ---
+    lang = data_source.replace("multigec_", "", 1) if data_source.startswith("multigec_") else data_source
+    score = _update_lang_stats(lang, score)
 
-    # Clamp to [0, 1]
-    return max(0.0, min(1.0, score))
+    return max(-1.0, min(1.0, score))
+
+
+# ---------------------------------------------------------------------------
+# Progress writer utility (called by training loop or external script)
+# ---------------------------------------------------------------------------
+
+def write_progress(step: int, total_steps: int, path: str = PROGRESS_FILE) -> None:
+    """
+    Write training progress to shared memory file.
+
+    Call this from a verl callback, training wrapper, or a cron-like watcher.
+    The reward function reads this file to adjust scheduling weights.
+
+    Args:
+        step: current global training step
+        total_steps: total expected steps
+        path: file path (default: /dev/shm/multigec_progress.json)
+    """
+    import os
+    data = {"step": step, "total_steps": total_steps}
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(data, f)
+    os.replace(tmp, path)  # atomic on POSIX
