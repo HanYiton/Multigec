@@ -3,7 +3,7 @@
 # Model: Qwen2.5-3B-Instruct with LoRA
 
 model:
-  name_or_path: "Qwen/Qwen2.5-3B-Instruct"
+  name_or_path: "Qwen/Qwen3-4B"
   torch_dtype: "bfloat16"
   attn_implementation: "flash_attention_2"
 
@@ -51,6 +51,6 @@ training:
   greater_is_better: false
   dataloader_num_workers: 4
   report_to: "wandb"
-  run_name: "multigec-sft-qwen2.5-3b"
+  run_name: "multigec-sft-qwen3-4b"
   deepspeed: "configs/ds_zero2.json"
   seed: 42

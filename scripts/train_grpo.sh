@@ -12,7 +12,7 @@
 
 set -x
 
-MODEL_PATH=${1:-"Qwen/Qwen2.5-3B-Instruct"}
+MODEL_PATH=${1:-"Qwen/Qwen3-4B"}
 TRAIN_FILE=${2:-"processed_data/multigec_train.parquet"}
 VAL_FILE=${3:-"processed_data/multigec_dev.parquet"}
 

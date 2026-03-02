@@ -151,9 +151,12 @@ def build_instruction(source: str, lang_code: str) -> str:
     """为每条样本构造 instruction-following 格式的 prompt。"""
     lang_name = LANG_MAP.get(lang_code, lang_code)
     return (
-        f"Please correct all grammatical errors in the following {lang_name} text. "
-        f"Output only the corrected text without any explanation.\n\n"
-        f"{source}"
+    f"Please identify whether the {lang_name} sentence I provide contains any grammatical errors. "
+    "If there are grammatical errors, please correct them with the minimal necessary changes. "
+    "If there are no grammatical errors, please reply with the original sentence. "
+    "You must output your final answer in the following format: "
+    "<answer> your corrected sentence, or the original sentence </answer> "
+    f"The sentence you need to correct is: {source}"
     )
 
 
